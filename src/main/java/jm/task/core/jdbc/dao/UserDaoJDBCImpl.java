@@ -13,12 +13,13 @@ import java.util.List;
 
 public class UserDaoJDBCImpl implements UserDao {
 
-    private final Connection connection = Util.getConnection();
+    private Connection connection;
 
     public UserDaoJDBCImpl() {
     }
 
     public void createUsersTable() {
+        connection  = Util.getConnection();
         try (Statement statement = connection.createStatement()) {
             connection.setAutoCommit(false);
             statement.execute(Constants.CREATE_TABLE_USER);
@@ -31,9 +32,15 @@ public class UserDaoJDBCImpl implements UserDao {
             }
             throw new RuntimeException(e);
         }
+        finally {
+            try {
+                connection.close();
+            } catch (SQLException ignored) {}
+        }
     }
 
     public void dropUsersTable() {
+        connection  = Util.getConnection();
         try (Statement statement = connection.createStatement()) {
             connection.setAutoCommit(false);
             statement.execute(Constants.DROP_TABLE_USER);
@@ -46,9 +53,15 @@ public class UserDaoJDBCImpl implements UserDao {
             }
             throw new RuntimeException(e);
         }
+        finally {
+            try {
+                connection.close();
+            } catch (SQLException ignored) {}
+        }
     }
 
     public void saveUser(String name, String lastName, byte age) {
+        connection  = Util.getConnection();
         try (Statement statement = connection.createStatement()) {
             connection.setAutoCommit(false);
             statement.execute(String.format(Constants.INSERT_INTO_USER, name, lastName, age));
@@ -61,9 +74,15 @@ public class UserDaoJDBCImpl implements UserDao {
             }
             throw new RuntimeException(e);
         }
+        finally {
+            try {
+                connection.close();
+            } catch (SQLException ignored) {}
+        }
     }
 
     public void removeUserById(long id) {
+        connection  = Util.getConnection();
         try (Statement statement = connection.createStatement()) {
             connection.setAutoCommit(false);
             statement.execute(String.format(Constants.DELETE_FROM_USER, id));
@@ -76,9 +95,15 @@ public class UserDaoJDBCImpl implements UserDao {
             }
             throw new RuntimeException(e);
         }
+        finally {
+            try {
+                connection.close();
+            } catch (SQLException ignored) {}
+        }
     }
 
     public List<User> getAllUsers() {
+        connection  = Util.getConnection();
         try (Statement statement = connection.createStatement()) {
             ResultSet resultSet = statement.executeQuery(Constants.GET_ALL_USERS);
             List<User> result = new ArrayList<>();
@@ -94,9 +119,15 @@ public class UserDaoJDBCImpl implements UserDao {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+        finally {
+            try {
+                connection.close();
+            } catch (SQLException ignored) {}
+        }
     }
 
     public void cleanUsersTable() {
+        connection  = Util.getConnection();
         try (Statement statement = connection.createStatement()) {
             connection.setAutoCommit(false);
             statement.execute(String.format(Constants.DELETE_TABLE_USER));
@@ -108,6 +139,11 @@ public class UserDaoJDBCImpl implements UserDao {
                 throw new RuntimeException(ex);
             }
             throw new RuntimeException(e);
+        }
+        finally {
+            try {
+                connection.close();
+            } catch (SQLException ignored) {}
         }
     }
 }
